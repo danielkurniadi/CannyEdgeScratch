@@ -1,0 +1,35 @@
+{
+    "name": "canny_edge_detector",
+    "context": "..",
+
+    // Path to docker file
+    "dockerFile": "../deploy/Dockerfile",
+  
+    // Use the next line if you want to publish any ports.
+    "appPort": ["5000:5000", "8888:8888"],
+
+    "extensions": [
+      // vscode extensions identifier
+      // desired to be used inside docker container
+      "ms-python.python",
+      "dbaeumer.vscode-eslint",
+      "ms-vscode.cpptools",
+      "twxs.cmake"
+    ],
+
+    // Docker run specific argument
+    "runArgs": [
+      "--device=/dev/video0:/dev/video0", "--volume=/tmp/.X11-unix:/tmp/.X11-unix",
+      "-e DISPLAY=$DISPLAY",
+    ],
+
+    // If you want to use a post create command
+    "postCreateCommand": "/bin/bash",
+
+    "settings": {
+      // additional settings for VS Code configurations
+      "python.pythonPath": "/usr/bin/python3",
+      "python.linting.pylintEnabled": true,
+      "python.linting.enabled": true
+    }
+}
