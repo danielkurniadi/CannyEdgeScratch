@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     cv::CommandLineParser cmd(argc, argv, keys);
 
     std::string inFile        = cmd.get<std::string>("inFile");
-    std::string outFile       = cmd.get<std::string>("outDir");
+    std::string outDir        = cmd.get<std::string>("outDir");
     int gaussWidth            = cmd.get<int>("gaussWidth");
     int gaussHeight           = cmd.get<int>("gaussHeight");
     double sigma              = cmd.get<double>("sigma");
@@ -54,6 +54,12 @@ int main(int argc, char** argv)
     // ------------------------
     cv::Size size(gaussWidth, gaussHeight);
     CannyEdgeDetector canny(inFile, size, sigma, lowerThresh, upperThresh);
+
+    // Display result
+    cv::imwrite(outDir + "/gauss.jpg", canny.gradientImage);
+    cv::imwrite(outDir + "/sobel.jpg", canny.sobelImage);
+    cv::imwrite(outDir + "/nonmaxsupp.jpg", canny.nonMaxSuppImage);
+    cv::imwrite(outDir + "/canny.jpg", canny.dstImage);
 
     return 0;
 }

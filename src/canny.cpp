@@ -49,12 +49,6 @@ CannyEdgeDetector::CannyEdgeDetector(std::string filepath, cv::Size gaussFilterS
 
     dstImage = hysteresisImage;
 
-    // Display result
-    cv::imwrite("results/gray.jpg", grayImage);
-    cv::imwrite("results/gauss.jpg", gradientImage);
-    cv::imwrite("results/sobel.jpg", sobelImage);
-    cv::imwrite("results/nonmaxsupp.jpg", nonMaxSuppImage);
-    cv::imwrite("results/hysteresis.jpg", hysteresisImage);
 };
 
 /*
