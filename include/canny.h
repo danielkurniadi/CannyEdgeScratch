@@ -19,17 +19,6 @@ using namespace std;
 
 class CannyEdgeDetector {
     private: 
-        cv::Mat srcImage; // original image
-        cv::Mat dstImage;  // grayscale image
-
-        // define placeholder for processing pipeline output
-        cv::Mat grayImage;
-        cv::Mat gradientImage;     // gradient filtered image
-        cv::Mat sobelImage;        // sobel filtered image
-        cv::Mat angleMap;          // degree angle image/map
-        cv::Mat nonMaxSuppImage;   // Non-maxima suppression image
-        cv::Mat thresholdedImage;  // double thresholded and final
-
         // helper operations
         cv::Mat filterImage(cv::Mat &src, vector< vector<double> > &filter);
 
@@ -44,6 +33,17 @@ class CannyEdgeDetector {
         vector<vector<double> > createGaussianFilter(cv::Size size, double sigma);
 
     public:
+        cv::Mat srcImage; // original image
+        cv::Mat dstImage;  // grayscale image
+
+        // define placeholder for processing pipeline output
+        cv::Mat grayImage;
+        cv::Mat gradientImage;     // gradient filtered image
+        cv::Mat sobelImage;        // sobel filtered image
+        cv::Mat angleMap;          // degree angle image/map
+        cv::Mat nonMaxSuppImage;   // Non-maxima suppression image
+        cv::Mat thresholdedImage;  // double thresholded and final
+
         CannyEdgeDetector(std::string, cv::Size, double, int, int);  // constructor
 };
 
