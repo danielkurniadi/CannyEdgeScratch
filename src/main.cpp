@@ -29,7 +29,7 @@ int main(int argc, char** argv)
         "{ o outDir        |    |  filepath of output image }"
         "{ gw gaussWidth   | 3  |  width of gaussian kernel in px }"
         "{ gh gaussHeight  | 3  |  height of gaussian kernel in px }"
-        "{ s sigma         | 1.0 | specify the sigma of gaussian kernel }"
+        "{ s sigma         | 0.4 | specify the sigma of gaussian kernel }"
         "{ l lowerThresh   | 80  | specify lower threshold for hysteresis }"
         "{ u upperThresh   | 120 | specify upper threshold for hysteresis }"
     ;
