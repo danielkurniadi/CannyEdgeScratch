@@ -248,7 +248,7 @@ void CannyEdgeDetector::applyNonMaxSuppression(cv::Mat &srcImage, cv::Mat &srcAn
                     dstImage.at<uchar>(i-1, j-1) = 0;
             }
             
-            //-45 Degree Edge
+            // -45 Degree Edge
             if (((-67.5 < Tangent) && (Tangent <= -22.5)) || ((112.5 < Tangent) && (Tangent <= 157.5)))
             {
                 if ((srcImage.at<uchar>(i,j) < srcImage.at<uchar>(i-1,j+1)) || (srcImage.at<uchar>(i,j) < srcImage.at<uchar>(i+1,j-1)))
@@ -266,6 +266,14 @@ void CannyEdgeDetector::applyNonMaxSuppression(cv::Mat &srcImage, cv::Mat &srcAn
     return;
 }
 
+/*
+// applyHysteresisThreholding()
+// @param cv:Mat src - input matrix representing single channel edged image obtained from sobel operation
+// @param int lowerThresh - lower threshold (pixel value 0-255) of double thresholding
+// @param int upperThresh - upper threshold (pixel value 0-255) of double thresholding
+//
+// @returnparam cv:Mat dst - output matrix result from non maximum suppresion
+*/
 void CannyEdgeDetector::applyHysteresisThreholding(cv::Mat &src, cv::Mat &dst, int lowerThresh, int upperThresh)
 {
     dst = cv::Mat(src.rows, src.cols, CV_8UC1);
@@ -276,16 +284,24 @@ void CannyEdgeDetector::applyHysteresisThreholding(cv::Mat &src, cv::Mat &dst, i
         {
             if(src.at<uchar>(i,j) >= upperThresh)
             {
-                dst.at<uchar>(i,j) = 255;
+                dst.at<uchar>(i,j) = 255;  // mark as strong edge
                 hysteresisRecursion(src, dst, i, j, lowerThresh);
             }
             else if(src.at<uchar>(i,j) < lowerThresh)
-                dst.at<uchar>(i,j) = 0;
+                dst.at<uchar>(i,j) = 0;  // mark as weak edge
         }
     }
 };
 
-
+/*
+// hysteresisRecursion()
+// @param cv:Mat src - input matrix representing single channel edged image obtained from sobel operation
+// @param int x - x-axis position of current pixel to evaluate
+// @param int y - y-axis position of current pixel to evaluate
+// @param int lowerThresh - lower threshold (pixel value 0-255) of double thresholding
+//
+// @returnparam cv:Mat dst - output matrix result from non maximum suppresion
+*/
 void CannyEdgeDetector::hysteresisRecursion(cv::Mat &src, cv::Mat &dst, int x, int y, int lowerThresh)
 {
 	int value = 0;
@@ -297,13 +313,13 @@ void CannyEdgeDetector::hysteresisRecursion(cv::Mat &src, cv::Mat &dst, int x, i
 				value = src.at<uchar>(i, j);
 
 				if (dst.at<uchar>(i,j) != 255) {
-					if (value >= lowerThresh) {
-						dst.at<uchar>(i,j) = 255;
-						hysteresisRecursion(src, dst, i, j, lowerThresh);
+					if (value >= lowerThresh) {    // visit edge inbetween weak and strong threshold
+						dst.at<uchar>(i,j) = 255;  // mark as visited
+						hysteresisRecursion(src, dst, i, j, lowerThresh);  // visit neighboring edge
                         return;
 					}
 					else {
-						dst.at<uchar>(i, j) = 0;
+						dst.at<uchar>(i, j) = 0;  // leave weak edge
 					}
 				}
 			}
