@@ -1,9 +1,9 @@
-//
-//  main.cpp
-//  Canny Edge Detector
-//
-//  Created by Hasan Akgün on 21/03/14.
-//  Copyright (c) 2014 Hasan Akgün. All rights reserved.
+// Cpp file | Canny Edge Detector demo
+// main.cpp
+// 
+// Created by: Daniel Kurniadi 
+// Date: at 1 April 2020 (No April Fools)
+// Copyright (c) 2020 Daniel Kurniadi. All rights reserved.
 //
 
 #include <iostream>
