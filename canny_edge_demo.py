@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
 
-""" 
-
+"""
+Different common functions for training the models.
+Copyright (C) 2020, Daniel Kurniadi <daniel.thekurniadi@gmail.com>
+This program is free software: you can use, modify and/or
+redistribute it under the terms of the GNU General Public
+License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later
+version. You should have received a copy of this license along
+this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
@@ -10,8 +17,6 @@ import argparse
 # core library
 import math
 import numpy as np  # store image in scalable matrix structure
-import scipy
-import scipy.ndimage as nd
 from PIL import Image  # reading image from file
 
 import matplotlib.pyplot as plt
@@ -179,7 +184,7 @@ def gaussian_kernel(size, sigma=1):
         kernel_1D[i] = dnorm(kernel_1D[i], 0, sigma)
 
     kernel_2D = np.outer(kernel_1D.T, kernel_1D.T)  # compute outer product
-    kernel_2D *= 1.0 / np.sum(kernel_2D)
+    kernel_2D *= 1.0 / kernel_2D.max()
 
     return kernel_2D
 
@@ -196,7 +201,7 @@ def gaussian_smoothing(image, kernel_size):
 # -------------------------------
 
 def edge_detection(image, kernel, convert_to_degree=False):
-    """ Perform sobel edge detection
+    """ Helper to perform first derivative edge detection
     """
     kernel_y = np.flip(kernel.T, axis=0)
 
@@ -223,85 +228,6 @@ def sobel_edge_detection(image, convert_to_degree=False):
         image, sobel_kernel_x, convert_to_degree)
 
     return gradient_magnitude, gradient_direction
-
-
-def gaussian_laplace_kernel(size, sigma=1):
-    """ Generate Laplacian of Gaussian 2nd derivative operator kernel
-    """
-    variance = np.power(sigma, 2)
-    x_space = np.linspace(-(size//2), size//2, size)
-
-    kernel_1D = x_space.copy()
-    for i in range(size):
-            kernel_1D[i] = dnorm(x_space[i], 0, sd=sigma)
-
-    # Step 1. kernel_2D is the exponent termb
-    # kernel_2D: (1 / (2 pi sigma^2)) . exp((x^2 + y^2) / 2sigma)
-    kernel_2D = np.outer(kernel_1D.T, kernel_1D.T)
-
-    # Step 2. compute the [1 - (x^2 + y^2) / 2sigma^2] term
-    xx, yy = np.meshgrid(x_space, x_space)
-    middle_term = xx**2 + yy**2
-    middle_term = 2 * variance - middle_term 
-
-    # Step 3. kernel 2D is the final gaussian kernel
-    # [1 / (pi sigma^4)] . [1 - (x^2 + y^2) / 2sigma^2] . exp[(x^2 + y^2) / 2sigma]
-    kernel_2D = -kernel_2D * middle_term / variance**2
-    return kernel_2D
-
-
-def gaussian_laplacian_edge_detection(image, kernel_size=9, sigma=1.4):
-    """ Perform Laplacian of Gaussian (LoG) edge detection
-    The calculation is broken down as follows:
-        1. Generate laplacian of gaussian (LoG) filter
-        2. Perform convolution with the (LoG) filter
-        3. Computer zero-crossing map and return
-
-    Args:
-        .. image (np.array) : image in gray scale to compute
-        .. kernel_size (int): size of LoG kernel
-        .. sigma (float): standard deviation of gaussian distribution, assumed same for x and y.
-
-    Return: zero crossing map
-    """
-    neighbours = [(di, dj) for di in range(-1,2)
-                  for dj in range(-1,2)]
-
-    def _check_zero_crossing(image, row, col):
-        positive_count, negative_count = 0, 0
-
-        for di, dj in neighbours:
-            if image[row+di, col+dj] < 0:
-                negative_count += 1
-            elif image[row+di, col+dj] > 0:
-                positive_count += 1
-        
-        return (negative_count > 0) and (positive_count > 0)
-
-    def _compute_zero_crossing_map(log_image):
-        zero_crossing_map = np.zeros(log_image.shape)
-
-        h, w = log_image.shape[:2]
-
-        # perform zero crossing check and compute 
-        # zero crossing map
-        for row in range(1, h-1):
-            for col in range(1, w-1):
-                if _check_zero_crossing(log_image, row, col):
-                    zero_crossing_map[row, col] = 1
-        
-        return zero_crossing_map
-    
-    # Step 1. Calculate LoG kernel or mask
-    kernel_2D = gaussian_laplace_kernel(kernel_size, sigma=sigma)
-
-    # Step 2. Perform convolution image with LoG kernel
-    log_image = convolution(image, kernel_2D)
-
-    # Step 3. Compute zero crossing map
-    zero_crossing_map = _compute_zero_crossing_map(log_image)
-
-    return zero_crossing_map 
 
 
 # -------------------------------
